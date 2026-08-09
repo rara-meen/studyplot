@@ -25,6 +25,17 @@ export const login = asyncHandler(async (req, res) => {
   });
 });
 
+// Stateless JWT bearer tokens aren't tracked server-side, so there's no
+// session to invalidate here — the frontend simply discards its stored
+// token. This endpoint exists so the client has a real logout call to
+// make (and a place to clear an auth cookie in the future, if this ever
+// moves off bearer tokens).
+export const logout = asyncHandler(async (req, res) => {
+  res.status(200).json({
+    success: true,
+  });
+});
+
 export const getMe = asyncHandler(async (req, res) => {
   const user = await getUserById(req.user.id);
 
