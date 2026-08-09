@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border dark:border-border-dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface text-ink transition-colors duration-250 dark:bg-night dark:text-ink-dark;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display font-bold tracking-tight;
+  }
+
+  ::selection {
+    @apply bg-brand-primary/20 text-ink dark:text-ink-dark;
+  }
+
+  :focus-visible {
+    outline: 2px solid #4f46e5;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  .surface-card {
+    @apply rounded-xl2 border border-border bg-surface-card shadow-card dark:border-border-dark dark:bg-night-card;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-ink-faint/40 dark:bg-ink-dark-faint/50;
+  }
+
+  .skeleton-shimmer {
+    background-image: linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.12) 0px,
+      rgba(148, 163, 184, 0.28) 40px,
+      rgba(148, 163, 184, 0.12) 80px
+    );
+    background-size: 800px 100%;
+  }
+
+  .prose-summary p {
+    @apply mb-3 last:mb-0;
+  }
+
+  .prose-summary strong {
+    @apply font-semibold text-ink dark:text-ink-dark;
+  }
+
+  .prose-summary em {
+    @apply italic;
+  }
+
+  .prose-summary ul {
+    @apply mb-3 ml-4 list-disc space-y-1;
+  }
+
+  .prose-summary ol {
+    @apply mb-3 ml-4 list-decimal space-y-1;
+  }
+
+  .prose-chat p {
+    @apply mb-2.5 last:mb-0;
+  }
+
+  .prose-chat strong {
+    @apply font-semibold;
+  }
+
+  .prose-chat em {
+    @apply italic;
+  }
+
+  .prose-chat ul {
+    @apply mb-2.5 ml-4 list-disc space-y-1 last:mb-0;
+  }
+
+  .prose-chat ol {
+    @apply mb-2.5 ml-4 list-decimal space-y-1 last:mb-0;
+  }
+
+  .prose-chat h1,
+  .prose-chat h2,
+  .prose-chat h3 {
+    @apply mb-2 mt-3 font-display text-base font-semibold first:mt-0;
+  }
+
+  .prose-chat a {
+    @apply underline underline-offset-2;
+  }
+
+  .prose-chat > :last-child {
+    @apply mb-0;
+  }
+
+  .prose-chat code {
+    @apply rounded bg-black/[0.06] px-1.5 py-0.5 font-mono text-[0.85em] dark:bg-white/[0.1];
+  }
+
+  .prose-chat pre {
+    @apply mb-2.5 overflow-x-auto rounded-lg bg-black/[0.06] p-3 text-[0.85em] leading-relaxed dark:bg-white/[0.06];
+  }
+
+  .prose-chat pre code {
+    @apply bg-transparent p-0;
+  }
+
+  /* Button ripple accent */
+  .btn-ripple {
+    position: relative;
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
