@@ -75,6 +75,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    // Fire-and-forget: JWTs here are stateless bearer tokens, so there's
+    // nothing server-side that must succeed before the client can log
+    // out. We still call the endpoint (useful if this ever moves to
+    // cookie-based sessions), but never block clearing local state on it.
+    authService.logout().catch(() => {});
     window.localStorage.removeItem(TOKEN_KEY);
     window.localStorage.removeItem(USER_KEY);
     setToken(null);
