@@ -22,6 +22,7 @@ connectDB();
 const app = express();
 
 app.use(cors({ origin: config.clientUrl }));
+console.log("CORS allowed origin set to:", config.clientUrl);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
