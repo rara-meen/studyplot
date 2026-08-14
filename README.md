@@ -1,4 +1,5 @@
 # StudyPlot
+https://studyplot-production.up.railway.app/
 
 StudyPlot is an AI-powered study workspace where students can upload PDFs, generate AI summaries, create flashcards, take quizzes, chat with documents, and save notes.
 
