@@ -44,7 +44,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-border bg-surface-card px-3 py-6 transition-all duration-250 ease-out dark:border-border-dark dark:bg-night-card",
-          "lg:static lg:translate-x-0",
+          "lg:fixed lg:translate-x-0",
           isSidebarCollapsed ? "lg:w-[76px]" : "lg:w-64",
           "w-64",
           isOpen ? "translate-x-0" : "-translate-x-full"
