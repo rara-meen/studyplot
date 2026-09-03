@@ -7,7 +7,11 @@ import { useAppContext } from "../../context/AppContext";
 import { startStudyTimeSession } from "../../utils/studyTimeTracker";
 
 const DashboardLayout = () => {
-  const { isSidebarOpen, setIsSidebarOpen } = useAppContext();
+  const {
+  isSidebarOpen,
+  setIsSidebarOpen,
+  isSidebarCollapsed,
+} = useAppContext();
 
   useEffect(() => {
     const stop = startStudyTimeSession();
@@ -21,7 +25,11 @@ const DashboardLayout = () => {
         onClose={() => setIsSidebarOpen(false)}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div
+  className={`flex min-w-0 flex-1 flex-col transition-all duration-250 ${
+    isSidebarCollapsed ? "lg:ml-[76px]" : "lg:ml-64"
+  }`}
+>
         <DashboardHeader onMenuClick={() => setIsSidebarOpen(true)} />
         <main className="flex-1 px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pb-8">
           <Outlet />
