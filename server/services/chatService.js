@@ -2,23 +2,63 @@ import Document from "../models/Document.js";
 import Chat from "../models/Chat.js";
 import { generateText } from "./geminiService.js";
 
-const MAX_CONTEXT_CHARS = 30000;
-const MAX_HISTORY_MESSAGES = 10;
+// Fallback cap only used when no summary exists yet (raw extracted text is
+// far more expensive per-message than a summary, so this stays small).
+const MAX_RAW_CONTEXT_CHARS = 12000;
+const MAX_HISTORY_MESSAGES = 6;
 const MAX_MESSAGE_LENGTH = 4000;
 
-const buildPrompt = (document, historyMessages, question) => {
-  const hasDocument = Boolean(document?.extractedText?.trim());
+/**
+ * Builds the document-grounding section of the chat prompt.
+ *
+ * Token efficiency: a chat conversation calls this on every single message,
+ * so whatever goes here gets paid for repeatedly — unlike Summary/Flashcards/
+ * Quiz, which each only pay for their context once per generation. Using the
+ * document's existing summary (a few hundred to ~2,000 characters) instead of
+ * the full extracted text (which can run tens of thousands of characters)
+ * cuts the per-message context cost roughly 10-15x for any document that's
+ * already been summarized, with no extra Gemini calls needed since the
+ * summary is already sitting in the database.
+ */
+export const buildDocumentSection = (document) => {
+  const hasSummary = Boolean(document?.summaryGeneratedAt && document?.summary?.detailedSummary);
+  const hasRawText = Boolean(document?.extractedText?.trim());
 
-  const documentSection = hasDocument
-    ? `The student is studying the following document titled "${
-        document.title || document.originalFilename
-      }". Base your answer on it whenever the question relates to it. If the document doesn't contain the answer, say so honestly instead of guessing — never invent information.
+  if (!hasSummary && !hasRawText) {
+    return "No document is currently attached to this conversation. Answer using your general knowledge, and if the student asks something that would need their notes, let them know they can upload a PDF first.";
+  }
 
-Document:
+  const title = document.title || document.originalFilename;
+
+  if (hasSummary) {
+    const { detailedSummary, keyTakeaways = [], definitions = [] } = document.summary;
+    const extras = [
+      keyTakeaways.length > 0 ? `Key takeaways:\n- ${keyTakeaways.join("\n- ")}` : "",
+      definitions.length > 0 ? `Key terms:\n- ${definitions.join("\n- ")}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    return `The student is studying "${title}". Base your answer on the summary below whenever the question relates to it. If it doesn't contain enough detail to answer precisely, say so honestly rather than guessing — never invent information.
+
+Document summary:
 """
-${document.extractedText.slice(0, MAX_CONTEXT_CHARS)}
-"""`
-    : "No document is currently attached to this conversation. Answer using your general knowledge, and if the student asks something that would need their notes, let them know they can upload a PDF first.";
+${detailedSummary}
+${extras ? `\n${extras}` : ""}
+"""`;
+  }
+
+  // No summary generated yet — fall back to a capped slice of the raw text.
+  return `The student is studying "${title}". Base your answer on the excerpt below whenever the question relates to it. If it doesn't contain the answer, say so honestly instead of guessing — never invent information.
+
+Document excerpt:
+"""
+${document.extractedText.slice(0, MAX_RAW_CONTEXT_CHARS)}
+"""`;
+};
+
+const buildPrompt = (document, historyMessages, question) => {
+  const documentSection = buildDocumentSection(document);
 
   const historySection =
     historyMessages.length > 0
