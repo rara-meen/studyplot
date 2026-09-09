@@ -46,6 +46,6 @@ app.use("/api/notifications", protect, notificationRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(config.port, () => {
+app.listen(config.port, "0.0.0.0", () => {
   console.log(`StudyPlot server running on port ${config.port}`);
 });
